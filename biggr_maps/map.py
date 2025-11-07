@@ -215,8 +215,8 @@ class AutoReaction(Reaction):
         self,
         mid_marker: MidMarkerNode,
         angle: float,
-        unit: float,
-        text_y_correction=8,
+        unit: float=50,
+        text_y_correction: float=8,
         **kwargs
     ):
         self.angle = angle
