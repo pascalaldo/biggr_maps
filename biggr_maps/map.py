@@ -61,9 +61,9 @@ class Map:
             min_x, max_x, min_y, max_y = 0, 0, 0, 0
         for node in self.nodes.values():
             min_x = min(min_x, node.x)
-            max_x = min(max_x, node.x)
+            max_x = max(max_x, node.x)
             min_y = min(min_y, node.y)
-            max_y = min(max_y, node.y)
+            max_y = max(max_y, node.y)
         min_x -= spacing
         min_y -= spacing
         max_x += spacing
