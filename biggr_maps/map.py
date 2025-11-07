@@ -250,7 +250,7 @@ class AutoReaction(Reaction):
             **kwargs
         )
 
-    def _determine_n_and_side(self, desired_delta, delta, plus_minus):
+    def alternating_side_placement(self, desired_delta, delta, plus_minus):
         if desired_delta is not None:
             if not any(
                 abs(x - desired_delta) < delta for x in self._used_deltas[plus_minus]
@@ -266,6 +266,22 @@ class AutoReaction(Reaction):
             if not any(abs(x - d) < delta for x in self._used_deltas[plus_minus]):
                 return n, side, d
             i += 1
+    
+    def same_side_placement(self, desired_delta, delta, plus_minus, absolute_side=1):
+        if desired_delta is not None:
+            if not any(
+                abs(x - desired_delta) < delta for x in self._used_deltas[plus_minus]
+            ):
+                side = desired_delta >= 0
+                n = abs(desired_delta) / delta
+                return n, side, desired_delta
+        n = 1
+        side = bool(absolute_side) == bool(plus_minus)
+        while True:
+            d = (n * delta) if side else -(n * delta)
+            if not any(abs(x - d) < delta for x in self._used_deltas[plus_minus]):
+                return n, side, d
+            n += 1
 
     def add_metabolite(
         self,
@@ -279,7 +295,10 @@ class AutoReaction(Reaction):
         text_y_correction=6,
         text_offset_f=lambda x: 20 + x * 12,
         b1_b2: Optional[Tuple[Optional[float], Optional[float]]] = None,
+        placement_f=None,
     ):
+        if placement_f is None:
+            placement_f = self.__class__.alternating_side_placement
         ref_node = self.mid_marker
         plus_minus = coefficient > 0
         if self.multi_markers[plus_minus] is not None:
@@ -296,7 +315,7 @@ class AutoReaction(Reaction):
             desired_delta = 0
 
         size = scale
-        n, side, angle_delta = self._determine_n_and_side(
+        n, side, angle_delta = placement_f(self,
             desired_delta, delta, plus_minus
         )
         angle = self.angle + angle_delta
