@@ -278,6 +278,7 @@ class AutoReaction(Reaction):
         b2_scale=0.8,
         text_y_correction=6,
         text_offset_f=lambda x: 20 + x * 12,
+        b1_b2: Optional[Tuple[Optional[float], Optional[float]]] = None,
     ):
         ref_node = self.mid_marker
         plus_minus = coefficient > 0
@@ -344,9 +345,9 @@ class AutoReaction(Reaction):
 
         self.metabolites.append((coefficient, node))
 
-        b1 = None
-        b2 = None
-        if bend_curve:
+        if b1_b2 is not None:
+            b1, b2 = b1_b2
+        elif bend_curve:
             b2 = (
                 node.x
                 + self.unit
