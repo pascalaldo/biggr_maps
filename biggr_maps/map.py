@@ -252,6 +252,7 @@ class PlacementOptions:
     def __init__(
         self,
         delta=math.pi * 0.15,
+        delta_tolerance=0.5,
         no_primary_length_f=None,
         scale=3.0,
         b1_scale=0.3,
@@ -261,6 +262,7 @@ class PlacementOptions:
         placement_f=None,
     ):
         self.delta = delta
+        self.delta_tolerance = delta_tolerance
         self.scale = scale
         self.b1_scale = b1_scale
         self.b2_scale = b2_scale
@@ -378,7 +380,7 @@ class AutoReaction(Reaction):
                 * size
                 * math.sin(self.angle + (1 - plus_minus) * math.pi),
             )
-        t = max(1.5 / size, 1.0)
+        t = min(1.5 / size, 1.0)
         bt = (
             cubic_bezier_bt(t, ref_node.x, b1[0], b2[0], x),
             cubic_bezier_bt(t, ref_node.y, b1[1], b2[1], y),
@@ -432,8 +434,9 @@ class AutoReaction(Reaction):
                 x, y, size, b1, b2, effective_angle_delta = self.calculate_placement(
                     ref_node, node, plus_minus, angle_delta, n, b1_b2, placement_opts
                 )
+                print(f"{node.bigg_id}: ({i}): (n:{n}, side:{side}, angle_delta:{angle_delta}) -> (x:{x}, y:{y}, size:{size}, b1:{b1}, b2:{b2}, effective_angle_delta:{effective_angle_delta})")
                 if not any(
-                    abs(d - effective_angle_delta) < (0.5 * placement_opts.delta)
+                    abs(d - effective_angle_delta) < (placement_opts.delta_tolerance * placement_opts.delta)
                     for d in self._used_deltas[plus_minus]
                 ):
                     break
