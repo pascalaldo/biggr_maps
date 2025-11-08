@@ -104,7 +104,11 @@ class Node:
         del d["identifier"]
         return d
 
-
+    def copy(self):
+        o = self.__class__(**{k: v for k, v in self.__dict__.items() if k not in ["node_type", "identifier"]})
+        o.node_type = self.node_type
+        return o
+    
 class MetaboliteNode(Node):
     def __init__(
         self,
