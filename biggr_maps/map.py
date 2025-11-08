@@ -360,19 +360,19 @@ class AutoReaction(Reaction):
         if b1_b2 is not None:
             b1, b2 = b1_b2
         else:
-            # b2 = (
-            #     x
-            #     + self.unit
-            #     * (1 - placement_opts.b2_scale)
-            #     * size
-            #     * math.cos(angle + (2 - plus_minus) * math.pi),
-            #     y
-            #     + self.unit
-            #     * (1 - placement_opts.b2_scale)
-            #     * size
-            #     * math.sin(angle + (2 - plus_minus) * math.pi),
-            # )
-            b2 = None
+            b2 = (
+                x
+                + self.unit
+                * (1 - placement_opts.b2_scale)
+                * size
+                * math.cos(angle + (2 - plus_minus) * math.pi),
+                y
+                + self.unit
+                * (1 - placement_opts.b2_scale)
+                * size
+                * math.sin(angle + (2 - plus_minus) * math.pi),
+            )
+            # b2 = None
             b1 = (
                 ref_node.x
                 + self.unit
