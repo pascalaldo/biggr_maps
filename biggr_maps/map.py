@@ -356,18 +356,19 @@ class AutoReaction(Reaction):
         if b1_b2 is not None:
             b1, b2 = b1_b2
         else:
-            b2 = (
-                x
-                + self.unit
-                * (1 - placement_opts.b2_scale)
-                * size
-                * math.cos(self.angle + (2 - plus_minus) * math.pi),
-                y
-                + self.unit
-                * (1 - placement_opts.b2_scale)
-                * size
-                * math.sin(self.angle + (2 - plus_minus) * math.pi),
-            )
+            # b2 = (
+            #     x
+            #     + self.unit
+            #     * (1 - placement_opts.b2_scale)
+            #     * size
+            #     * math.cos(angle + (2 - plus_minus) * math.pi),
+            #     y
+            #     + self.unit
+            #     * (1 - placement_opts.b2_scale)
+            #     * size
+            #     * math.sin(angle + (2 - plus_minus) * math.pi),
+            # )
+            b2 = None
             b1 = (
                 ref_node.x
                 + self.unit
@@ -382,8 +383,8 @@ class AutoReaction(Reaction):
             )
         t = min(1.5 / size, 1.0)
         bt = (
-            cubic_bezier_bt(t, ref_node.x, b1[0], b2[0], x),
-            cubic_bezier_bt(t, ref_node.y, b1[1], b2[1], y),
+            cubic_bezier_bt(t, ref_node.x, b1[0] if b1 is not None else ref_node.x, b2[0] if b2 is not None else x, x),
+            cubic_bezier_bt(t, ref_node.y, b1[1] if b1 is not None else ref_node.y, b2[1] if b2 is not None else y, y),
         )
         effective_angle_delta = (
             math.atan2(bt[1] - ref_node.y, bt[0] - ref_node.x) - self.angle
