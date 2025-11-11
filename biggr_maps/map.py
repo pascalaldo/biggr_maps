@@ -525,6 +525,7 @@ class AutoReactionWithOptionalMetabolites(AutoReaction):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.optional_metabolites = {}
+        self.finalized = False
     
     def add_optional_metabolite(self, node: MetaboliteNode, coefficient: float, b1_b2: Optional[Tuple[Optional[float], Optional[float]]]):
         self.optional_metabolites[node.bigg_id] = {"coefficient": coefficient, "node": node, "b1_b2": b1_b2}
