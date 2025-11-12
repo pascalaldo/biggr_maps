@@ -90,4 +90,8 @@ def load_as_template(fp: TextIO) -> map.Map:
             else:
                 reaction.add_optional_metabolite(node=node, coefficient=coefficient, b1_b2=b1_b2)
         reactions.append(reaction)
+    
+    for label_data in data[1]["text_labels"].values():
+        label = map.TextLabel(**label_data)
+        m.add_label(label)
     return m, reactions, nodes

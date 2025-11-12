@@ -1,4 +1,4 @@
-from typing import Any, Dict, List, Tuple
+from typing import Any, Dict, List, Optional, Tuple
 from biggr_maps.map import Map, AutoReaction, MetaboliteNode, MidMarkerNode, Node
 import math
 
@@ -7,11 +7,10 @@ def alternating_pathways_sides(
     map: Map,
     node1: Node,
     node2: Node,
+    mid_markers: List[MidMarkerNode],
     spacing: float = 200,
     centered: bool = True,
 ):
-    mid_markers = [node for node in map.nodes.values() if node.node_type == "midmarker"]
-
     dx = node2.x - node1.x
     dy = node2.y - node1.y
     distance = math.sqrt(dx**2 + dy**2)
@@ -39,6 +38,7 @@ def place_reaction_on_backbone(
     reaction_info: List[Tuple[float, MetaboliteNode]],
     placement_f = alternating_pathways_sides,
     add_metabolite_opts = None,
+    additional_mid_markers: Optional[List[MidMarkerNode]] = None,
     **kwargs
 ):
     if add_metabolite_opts is None:
@@ -46,7 +46,12 @@ def place_reaction_on_backbone(
     backbone_nodes = [
         (coeff, n) for coeff, n in reaction_info if n.identifier in map.nodes
     ]
-    if len(backbone_nodes) != 2:
+    while len(backbone_nodes) > 1:
+        if (backbone_nodes[0][0] > 0) == (backbone_nodes[1][0] > 0):
+            backbone_nodes.pop(1)
+        else:
+            break
+    if len(backbone_nodes) < 2:
         raise ValueError(
             f"Two metabolite nodes should be present in the map already, found {len(backbone_nodes)}."
         )
@@ -66,7 +71,10 @@ def place_reaction_on_backbone(
     #     plus_node.x + (minus_node.x - plus_node.x) / 2,
     #     plus_node.y + (minus_node.y - plus_node.y) / 2,
     # )
-    mid_marker = MidMarkerNode(*placement_f(map, plus_node, minus_node))
+    mid_markers = [node for node in map.nodes.values() if node.node_type == "midmarker"]
+    if additional_mid_markers is not None:
+        mid_markers.extend(additional_mid_markers)
+    mid_marker = MidMarkerNode(*placement_f(map, plus_node, minus_node, mid_markers))
 
     reaction = AutoReaction(
         name=name, bigg_id=bigg_id, mid_marker=mid_marker, angle=angle, **kwargs
@@ -74,4 +82,4 @@ def place_reaction_on_backbone(
     for coeff, met in reaction_info:
         reaction.add_metabolite(met, coeff, **add_metabolite_opts)
 
-    map.add_reaction(reaction)
+    return reaction

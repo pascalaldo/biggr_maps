@@ -25,11 +25,12 @@ class Map:
         self.reactions = {}
         self.nodes = {}
         self.segments = {}
-        self.text_labels = {}
+        self.labels = {}
         self.canvas = canvas
         self._node_counter = 0
         self._reaction_counter = 0
         self._segment_counter = 0
+        self._label_counter = 0
 
     def add_node(self, node: Optional["Node"]):
         if node is None or node.identifier is not None:
@@ -64,6 +65,13 @@ class Map:
         for segment in reaction.segments:
             self.add_segment(segment)
 
+    def add_label(self, label: "TextLabel"):
+        while self._label_counter in self.labels:
+            self._label_counter += 1
+        label.identifier = self._label_counter
+        self.labels[label.identifier] = label
+        self._label_counter += 1
+
     def fit_canvas(self, spacing: float = 100, expand_only=False):
         if expand_only:
             min_x = self.canvas[0]
@@ -93,7 +101,7 @@ class Map:
         d_body = {
             "reactions": {k: v.to_escher() for k, v in self.reactions.items()},
             "nodes": {k: v.to_escher() for k, v in self.nodes.items()},
-            "text_labels": {k: v.to_escher() for k, v in self.text_labels.items()},
+            "text_labels": {k: v.to_escher() for k, v in self.labels.items()},
             "canvas": {
                 "x": self.canvas[0],
                 "y": self.canvas[1],
@@ -103,6 +111,17 @@ class Map:
         }
         return [d_header, d_body]
 
+class TextLabel:
+    def __init__(self, x: float, y: float, text: str):
+        self.identifier = None
+        self.x = x
+        self.y = y
+        self.text = text
+    
+    def to_escher(self):
+        d = self.__dict__.copy()
+        del d["identifier"]
+        return d
 
 class Node:
     def __init__(self, x: Optional[float] = None, y: Optional[float] = None):
