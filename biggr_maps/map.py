@@ -35,23 +35,23 @@ class Map:
     def add_node(self, node: Optional["Node"]):
         if node is None or node.identifier is not None:
             return
-        while self._node_counter in self.nodes:
+        while str(self._node_counter) in self.nodes:
             self._node_counter += 1
-        node.identifier = self._node_counter
+        node.identifier = str(self._node_counter)
         self.nodes[node.identifier] = node
         self._node_counter += 1
     
     def add_segment(self, segment: "Segment"):
-        while self._segment_counter in self.segments:
+        while str(self._segment_counter) in self.segments:
             self._segment_counter += 1
-        segment.identifier = self._segment_counter
+        segment.identifier = str(self._segment_counter)
         self.segments[segment.identifier] = segment
         self._segment_counter += 1
 
     def add_reaction(self, reaction: "Reaction"):
-        while self._reaction_counter in self.reactions:
+        while str(self._reaction_counter) in self.reactions:
             self._reaction_counter += 1
-        reaction.identifier = self._reaction_counter
+        reaction.identifier = str(self._reaction_counter)
         reaction._map = self
         self.reactions[reaction.identifier] = reaction
         self._reaction_counter += 1
@@ -66,9 +66,9 @@ class Map:
             self.add_segment(segment)
 
     def add_label(self, label: "TextLabel"):
-        while self._label_counter in self.labels:
+        while str(self._label_counter) in self.labels:
             self._label_counter += 1
-        label.identifier = self._label_counter
+        label.identifier = str(self._label_counter)
         self.labels[label.identifier] = label
         self._label_counter += 1
 
@@ -273,7 +273,7 @@ class Reaction:
             "gene_reaction_rule": "",
             "genes": [],
             "metabolites": [
-                {"coeficient": coeff, "bigg_id": node.bigg_id}
+                {"coefficient": coeff, "bigg_id": node.bigg_id}
                 for coeff, node in self.metabolites
             ],
             "segments": {
